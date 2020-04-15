@@ -67,6 +67,7 @@ class _TakePicScreenState extends State<HomeScreen> {
     // _storeImage();
     String fileName = basename(_takenImage.path);
     print(fileName);
+    
        StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child('${overalluserid}/${fileName}');
        StorageUploadTask uploadTask = firebaseStorageRef.putFile(_takenImage);
        StorageTaskSnapshot taskSnapshot=await uploadTask.onComplete;
