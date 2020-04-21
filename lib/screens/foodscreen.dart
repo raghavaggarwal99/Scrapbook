@@ -16,18 +16,36 @@ var overalluserid;
   Uint8List imagefile;
   Map<int,Uint8List> images={};
   int i=0;
+String url1;
+String url2;
+
+  void init(){
+    getimages();
+    super.initState();
+  }
+
 
   void getimages() async{
       final StorageReference photoreference = FirebaseStorage.instance.ref().child('${overalluserid}');
-      photoreference.getDownloadURL().then((data){
-        // this.setState(() {
-        //  images[i]=data;
-        //  i++; 
-        // });
+      photoreference.child('Screenshot_20200409-024054_YouTube.jpg').getDownloadURL().then((data){
+        this.setState(() {
+         url1=data;
+         i++; 
+        });
         print(data);
       }).catchError((e){
         print(e);
       });
+      photoreference.child('Screenshot_20200410-224919_Instagram.jpg').getDownloadURL().then((data1){
+        this.setState(() {
+         url2=data1;
+         i++; 
+        });
+        print(data1);
+      }).catchError((e){
+        print(e);
+      });
+
   }
 
    @override
@@ -37,13 +55,24 @@ var overalluserid;
       context,
       listen: false,
     ).userId;
-    getimages();
-    // return Image.memory(images[0],fit: BoxFit.cover);
+    // return Image.memory(imagefile,fit: BoxFit.cover);
      return Scaffold(
       backgroundColor: Theme.of(context).primaryColor,
-      body: new Container(
-        child: new Text("smjfnskjenfks")
-      )
+       body: new Center(
+        child: new ListView(
+          children: [
+            Image.network(url1,  
+              width: 600.0,
+              height: 240.0,
+              fit: BoxFit.cover,),
+            Image.network(url2,  
+              width: 600.0,
+              height: 240.0,
+              fit: BoxFit.cover,),
+          ],
+          
+        ),
+       ),
     );
   }
 
