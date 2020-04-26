@@ -9,6 +9,7 @@ class MoviePage extends StatefulWidget {
 }
 
 class _MoviePageState extends State<MoviePage> {
+  
   static final formKey = new GlobalKey<FormState>();
   String movie_name;
   String genre;
@@ -205,7 +206,7 @@ class _MoviePageState extends State<MoviePage> {
                               'comments': comments,
                               'free_link': free_link
                             });
-                            Navigator.pop(context);
+                            // Navigator.pop(context);
                           }
                         },
                       ),

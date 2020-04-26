@@ -72,18 +72,18 @@ var overalluserid;
 
       backgroundColor: Theme.of(context).primaryColor,
        body: new Center(
-        child: new ListView(
-          children: [
-            //Yaha loop laga de if url is empty toh kuch nahi.
-            Image.network(urls[0],  
-              width: 600.0,
-              height: 240.0,
-              fit: BoxFit.cover,),
-          ],
+        // child: new ListView(
+        //   children: [
+        //     //Yaha loop laga de if url is empty toh kuch nahi.
+        //     Image.network(urls[0],  
+        //       width: 600.0,
+        //       height: 240.0,
+        //       fit: BoxFit.cover,),
+        //   ],
           
         ),
         // child:new Text(urls[0])
-       ),
+      //  ),
     );
   }
 
