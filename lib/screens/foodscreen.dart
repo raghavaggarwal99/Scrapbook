@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import '../providers/auth.dart';
 import 'package:provider/provider.dart';
 import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FoodScreen extends StatefulWidget {
   @override
@@ -16,35 +17,45 @@ var overalluserid;
   Uint8List imagefile;
   Map<int,Uint8List> images={};
   int i=0;
-String url1;
-String url2;
+      var imagesfilename = new List<String>();
+       var urls = new List<String>();
+       var description = new List<String>();
 
-  void init(){
-    getimages();
-    super.initState();
-  }
+  // void init(){
+  //   getimages();
+  //   super.initState();
+  // }
 
 
   void getimages() async{
-      final StorageReference photoreference = FirebaseStorage.instance.ref().child('${overalluserid}');
-      photoreference.child('Screenshot_20200409-024054_YouTube.jpg').getDownloadURL().then((data){
-        this.setState(() {
-         url1=data;
-         i++; 
-        });
-        print(data);
-      }).catchError((e){
-        print(e);
-      });
-      photoreference.child('Screenshot_20200410-224919_Instagram.jpg').getDownloadURL().then((data1){
-        this.setState(() {
-         url2=data1;
-         i++; 
-        });
-        print(data1);
-      }).catchError((e){
-        print(e);
-      });
+      print("entred");
+       
+
+      final db = Firestore.instance;
+
+        db
+        .collection("Scrapbook")
+        .document(overalluserid)
+        .collection("Images")
+        .getDocuments()
+        .then((QuerySnapshot snapshot) {
+        snapshot.documents.forEach((f) 
+          {
+            // print("sdvs")
+            imagesfilename.add(f.data["Image_Name"].toString());
+            description.add(f.data["description"].toString());
+             final StorageReference photoreference = FirebaseStorage.instance.ref().child('${overalluserid}');
+              photoreference.child(f.data["Image_Name"].toString()).getDownloadURL().then((data){
+                this.setState(() { 
+                   urls.add(data);
+                   print(urls[0]);
+                });
+              }).catchError((e){
+                print(e);
+              });
+            }
+          );
+    });
 
   }
 
@@ -55,23 +66,23 @@ String url2;
       context,
       listen: false,
     ).userId;
+    getimages();
     // return Image.memory(imagefile,fit: BoxFit.cover);
      return Scaffold(
+
       backgroundColor: Theme.of(context).primaryColor,
        body: new Center(
         child: new ListView(
           children: [
-            Image.network(url1,  
-              width: 600.0,
-              height: 240.0,
-              fit: BoxFit.cover,),
-            Image.network(url2,  
+            //Yaha loop laga de if url is empty toh kuch nahi.
+            Image.network(urls[0],  
               width: 600.0,
               height: 240.0,
               fit: BoxFit.cover,),
           ],
           
         ),
+        // child:new Text(urls[0])
        ),
     );
   }

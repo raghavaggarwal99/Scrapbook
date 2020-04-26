@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../screens/homeScreen.dart';
 import '../screens/foodscreen.dart';
+import '../screens/moviescreen.dart';
 
 
 import '../providers/auth.dart';
@@ -30,7 +31,7 @@ class _TabsScreenState extends State<TabsScreen>
   @override
   void initState() {
     _tabController = TabController(
-      length: 2,
+      length: 3,
       vsync: this,
       initialIndex: 0,
     );
@@ -80,9 +81,9 @@ class _TabsScreenState extends State<TabsScreen>
         Tab(
           text: 'Food',
         ),
-        // Tab(
-        //   text: 'Call',
-        // ),
+        Tab(
+          text: 'Movie',
+        ),
         // Tab(
         //   text: 'Help',
         // ),
@@ -121,7 +122,7 @@ class _TabsScreenState extends State<TabsScreen>
                 children: <Widget>[
                   HomeScreen(),
                   FoodScreen(),
-                  // Distress(),
+                  MovieScreen(),
                   // Groceries(),
                   // Container(
                   //   color:Colors.red,

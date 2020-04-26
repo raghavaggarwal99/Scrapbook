@@ -8,6 +8,7 @@ import 'package:path/path.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../providers/auth.dart';
 // import './view_images.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/take-pic';
@@ -19,30 +20,63 @@ class HomeScreen extends StatefulWidget {
 
 
 class _TakePicScreenState extends State<HomeScreen> {
-  File _takenImage;
+   final _formKey = new GlobalKey<FormState>();
+  int check=0;
   var overalluserid;
-  File _cameraImage;
+  File _takenImage;
+  var description;
+  final db = Firestore.instance;
+  String fileName;
 
-   Future<void> imageSelectorCamera() async {
-    var cameraphoto = await ImagePicker.pickImage(
-      source: ImageSource.camera,
-    );
-    setState(() {
-      _cameraImage = cameraphoto;    
-    });
+  void validateAndSubmit() async{
 
-    print(_cameraImage);
+     final form = _formKey.currentState;
 
-    String fileName = basename(_cameraImage.path);
-    print(fileName);
-       StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child('${overalluserid}/${fileName}');
-       StorageUploadTask uploadTask = firebaseStorageRef.putFile(_cameraImage);
+    if (form.validate()) {
+      form.save();
+       print("yes the form is validated");
+      print(description);
+      print(fileName);
+
+      if(fileName!=null && description!=null ){
+        await db.collection('Scrapbook').document(overalluserid).collection("Images").add({
+            'Image_Name': fileName,
+            'Description': description,
+            });
+
+        StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child('${overalluserid}/${fileName}');
+       StorageUploadTask uploadTask = firebaseStorageRef.putFile(_takenImage);
        StorageTaskSnapshot taskSnapshot=await uploadTask.onComplete;
        print(taskSnapshot);
        setState(() {
-          print("Camera Picture uploaded");
+          print("Picture uploaded!!!");
           // Scaffold.of(context).showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
        });
+        
+      }
+      else{
+        print("Some field is empty");
+      }
+    }
+   
+  }
+
+   Future<void> imageSelectorCamera() async {
+    // File _cameraImage;
+    var cameraphoto = await ImagePicker.pickImage(
+      source: ImageSource.camera,
+    );
+    if (this.mounted){
+      setState(() {
+        _takenImage = cameraphoto;    
+      });
+    }
+
+    print(_takenImage);
+
+     fileName = basename(_takenImage.path);
+    print(fileName);
+  
 
   }
 
@@ -55,27 +89,25 @@ class _TakePicScreenState extends State<HomeScreen> {
     if (imageFile == null) {
       return;
     }
-    setState(() {
-      _takenImage = imageFile;
-    });
-
+    if (this.mounted){
+      setState(() {
+        _takenImage = imageFile;
+      });
+    }
     print(_takenImage);
     
-    // uploadPic(context);
-    //  Provider.of<Pictures>(context, listen: false).storeImage(_imageToStore)
-
-    // _storeImage();
-    String fileName = basename(_takenImage.path);
+  
+     fileName = basename(_takenImage.path);
     print(fileName);
     
-       StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child('${overalluserid}/${fileName}');
-       StorageUploadTask uploadTask = firebaseStorageRef.putFile(_takenImage);
-       StorageTaskSnapshot taskSnapshot=await uploadTask.onComplete;
-       print(taskSnapshot);
-       setState(() {
-          print("Profile Picture uploaded");
-          // Scaffold.of(context).showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
-       });
+      //  StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child('${overalluserid}/${fileName}');
+      //  StorageUploadTask uploadTask = firebaseStorageRef.putFile(_takenImage);
+      //  StorageTaskSnapshot taskSnapshot=await uploadTask.onComplete;
+      //  print(taskSnapshot);
+      //  setState(() {
+      //     print("Profile Picture uploaded");
+      //     // Scaffold.of(context).showSnackBar(SnackBar(content: Text('Profile Picture Uploaded')));
+      //  });
    
   }
 
@@ -87,19 +119,68 @@ class _TakePicScreenState extends State<HomeScreen> {
     ).userId;
 
     return Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+       body: Stack(
+          children: <Widget>[
+            // showImageButton(context),
+            _showForm(context),
+          ],
+        )
+        );
+  }
+
+    Widget _showForm(context) {
+    return new Container(
+        padding: EdgeInsets.all(16.0),
+        child: new Form(
+          key: _formKey,
+          child: new ListView(
+            shrinkWrap: true,
             children: <Widget>[
-              RaisedButton(
-                onPressed: () {
-                  _displayOptionsDialog(context);
-                },
-                child: Text('Click Me'),
-              )
+              // showLogo(),
+              showImageButton(context),
+              showDescriptionInput(),
+              showPrimaryButton(),
+              
             ],
           ),
         ));
+  }
+
+
+  Widget showImageButton(context){
+    return RaisedButton(
+        onPressed: () {
+           _displayOptionsDialog(context);
+          },
+        child: Text('Click Me'),
+      );
+  }
+
+
+    Widget showDescriptionInput() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0.0, 100.0, 0.0, 0.0),
+      child: new TextFormField(
+        maxLines: 1,
+        keyboardType: TextInputType.emailAddress,
+        autofocus: false,
+        decoration: new InputDecoration(
+            hintText: 'Description',
+            icon: new Icon(
+              Icons.mail,
+              color: Colors.grey,
+            )),
+        validator: (value) {
+          if(value.isEmpty){
+            return "Description should not be empty";
+          }
+          else{
+            return null;
+          }
+        },
+        onSaved: (value) => description = value.trim(),
+      ),
+    );
   }
 
   void _displayOptionsDialog(context) async {
@@ -133,6 +214,23 @@ class _TakePicScreenState extends State<HomeScreen> {
         });
   }
 
+  Widget showPrimaryButton() {
+    return new Padding(
+        padding: EdgeInsets.fromLTRB(0.0, 45.0, 0.0, 0.0),
+        child: SizedBox(
+          height: 40.0,
+          child: new RaisedButton(
+            elevation: 5.0,
+            shape: new RoundedRectangleBorder(
+                borderRadius: new BorderRadius.circular(30.0)),
+            color: Colors.blue,
+            child: new Text('Submit',
+                style: new TextStyle(fontSize: 20.0, color: Colors.white)),
+            onPressed: validateAndSubmit,
+            //Here what i did was I summed up the signup and sign in in this fucntion only. So when I click the "Create an account" It's just a bool _isLoginForm 
+          ),
+        ));
+  }
 
 
 
