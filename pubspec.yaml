@@ -48,6 +48,8 @@ dev_dependencies:
   image_picker: ^0.6.3
   path: ^1.6.4
   path_provider: ^1.5.1
+  share: 0.6.4
+  smooth_star_rating: 1.0.4+2
   # carousel: ^2.0.0
 
 

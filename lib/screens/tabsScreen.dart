@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../screens/homeScreen.dart';
-import '../screens/foodscreen.dart';
+import '../screens/memoryscreen.dart';
 import '../screens/moviescreen.dart';
-
+import '../screens/sarthscreen.dart';
 
 import '../providers/auth.dart';
 class TabsScreen extends StatefulWidget {
@@ -31,7 +31,7 @@ class _TabsScreenState extends State<TabsScreen>
   @override
   void initState() {
     _tabController = TabController(
-      length: 3,
+      length: 4,
       vsync: this,
       initialIndex: 0,
     );
@@ -79,14 +79,14 @@ class _TabsScreenState extends State<TabsScreen>
           text: 'Home',
         ),
         Tab(
-          text: 'Food',
+          text: 'Images',
         ),
         Tab(
           text: 'Movie',
         ),
-        // Tab(
-        //   text: 'Help',
-        // ),
+        Tab(
+          text: 'Food',
+        ),
       ],
     );
 
@@ -121,9 +121,9 @@ class _TabsScreenState extends State<TabsScreen>
                 controller: _tabController,
                 children: <Widget>[
                   HomeScreen(),
-                  FoodScreen(),
+                  MemoryScreen(),
                   MovieScreen(),
-                  // Groceries(),
+                  SarthScreen(),
                   // Container(
                   //   color:Colors.red,
                   // ),

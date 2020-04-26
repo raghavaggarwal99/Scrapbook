@@ -5,13 +5,13 @@ import 'package:provider/provider.dart';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FoodScreen extends StatefulWidget {
+class MemoryScreen extends StatefulWidget {
   @override
 
   Memories createState() => Memories();
 }
 
-class Memories extends State<FoodScreen>{
+class Memories extends State<MemoryScreen>{
 var overalluserid;
   int maxSize=7*1024*1024;
   Uint8List imagefile;
