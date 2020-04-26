@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../providers/auth.dart';
+import 'package:provider/provider.dart';
 import 'dart:async';
 // import 'main.dart';
 
@@ -9,17 +11,17 @@ class MoviePage extends StatefulWidget {
 }
 
 class _MoviePageState extends State<MoviePage> {
-  
   static final formKey = new GlobalKey<FormState>();
   String movie_name;
   String genre;
   List<String> genres = [];
   String famous_cast;
   List<String> famous_casts = [];
-  double rating;
+  double rating = 0.0;
   String comments;
   String free_link;
   final db = Firestore.instance;
+  var overalluserid;
 
   bool _save() {
     final form = formKey.currentState;
@@ -36,13 +38,17 @@ class _MoviePageState extends State<MoviePage> {
 
   @override
   Widget build(BuildContext context) {
+    overalluserid = Provider.of<Auth>(
+      context,
+      listen: false,
+    ).userId;
     final spacing = MediaQuery.of(context).size.height * 0.04;
 
     return Scaffold(
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         title: Text(
-          'Movies',
+          'Movies' ?? ' ',
           style: Theme.of(context).textTheme.title,
         ),
         leading: IconButton(
@@ -123,7 +129,9 @@ class _MoviePageState extends State<MoviePage> {
                         hintStyle: Theme.of(context).textTheme.display1,
                       ),
                       //validator: (value) => value.isEmpty ? 'Movie Name can\'t be empty' : null,
-                      onSaved: (value) => famous_cast = value,
+                      onSaved: (value) => famous_cast != " "
+                          ? famous_cast = value
+                          : famous_cast = "",
                     ),
                     SizedBox(
                       height: spacing,
@@ -157,7 +165,8 @@ class _MoviePageState extends State<MoviePage> {
                         labelStyle: Theme.of(context).textTheme.caption,
                       ),
                       //validator: (value) => value.isEmpty ? 'Movie Name can\'t be empty' : null,
-                      onSaved: (value) => comments = value,
+                      onSaved: (value) =>
+                          comments != "" ? comments = value : comments = " ",
                     ),
                     SizedBox(
                       height: spacing,
@@ -173,7 +182,8 @@ class _MoviePageState extends State<MoviePage> {
                         labelStyle: Theme.of(context).textTheme.caption,
                       ),
                       //validator: (value) => value.isEmpty ? 'Movie Name can\'t be empty' : null,
-                      onSaved: (value) => free_link = value,
+                      onSaved: (value) =>
+                          free_link != "" ? free_link = value : free_link = " ",
                     ),
                     SizedBox(
                       height: spacing,
@@ -191,14 +201,18 @@ class _MoviePageState extends State<MoviePage> {
                           vertical: 12.0,
                         ),
                         child: Text(
-                          'Save',
+                          'Save' ?? '',
                           style: Theme.of(context).textTheme.button,
                         ),
                         onPressed: () async {
                           if (_save()) {
                             genres = genre.split(',');
                             famous_casts = famous_cast.split(',');
-                            await db.collection('Movies').add({
+                            await db
+                                .collection('Scrapbook')
+                                .document(overalluserid)
+                                .collection('Movies')
+                                .add({
                               'movie_n': movie_name,
                               'genre': genres,
                               'famous_c': famous_casts,
@@ -206,7 +220,7 @@ class _MoviePageState extends State<MoviePage> {
                               'comments': comments,
                               'free_link': free_link
                             });
-                            // Navigator.pop(context);
+                            Navigator.pop(context);
                           }
                         },
                       ),
@@ -214,7 +228,6 @@ class _MoviePageState extends State<MoviePage> {
                   ],
                 ),
               ),
-              // ),
             ],
           ),
         ),

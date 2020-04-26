@@ -56,21 +56,21 @@ class MovieScreen extends StatelessWidget {
           ),
         ),
       ),
-      home: MoviePage(title: 'ScrapBook'),
+      home: MovieScreenPage(title: 'ScrapBook'),
     );
   }
 }
 
-class MoviePage extends StatefulWidget {
-  MoviePage({Key key, this.title}) : super(key: key);
+class MovieScreenPage extends StatefulWidget {
+  MovieScreenPage({Key key, this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyMoviePageState createState() => _MyMoviePageState();
+  _MyMovieScreenPageState createState() => _MyMovieScreenPageState();
 }
 
-class _MyMoviePageState extends State<MoviePage> {
+class _MyMovieScreenPageState extends State<MovieScreenPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

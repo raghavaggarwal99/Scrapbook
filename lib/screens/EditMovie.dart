@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../providers/auth.dart';
+import 'package:provider/provider.dart';
 import 'dart:async';
 import 'Showmovie.dart';
 
@@ -29,7 +31,7 @@ class _EditscreenState extends State<Editscreen> {
       this.ratings, this.comments, this.freelink);
   static final formKey = new GlobalKey<FormState>();
 
-  final db = Firestore.instance.collection('Movies');
+  final db = Firestore.instance;
   String docId;
   String name;
   String genre;
@@ -39,7 +41,7 @@ class _EditscreenState extends State<Editscreen> {
   double ratings;
   String comments;
   String freelink;
-
+  var overalluserid;
   bool _save() {
     final form = formKey.currentState;
     if (form.validate()) {
@@ -57,6 +59,10 @@ class _EditscreenState extends State<Editscreen> {
 
   @override
   Widget build(BuildContext context) {
+    overalluserid = Provider.of<Auth>(
+      context,
+      listen: false,
+    ).userId;
     return new Scaffold(
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
@@ -202,7 +208,12 @@ class _EditscreenState extends State<Editscreen> {
                             if (_save()) {
                               genres = genre.split(',');
                               famous_casts = famous_cast.split(',');
-                              await db.document(docId).setData({
+                              await db
+                                  .collection('Scrapbook')
+                                  .document(overalluserid)
+                                  .collection('Movies')
+                                  .document(docId)
+                                  .setData({
                                 'movie_n': name,
                                 'genre': genres,
                                 'famous_c': famous_casts,

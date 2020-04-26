@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../providers/auth.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'EditMovie.dart';
 
@@ -10,10 +12,14 @@ class ShowPage extends StatefulWidget {
 }
 
 class _ShowPageState extends State<ShowPage> {
-  final db = Firestore.instance.collection('Movies');
-
+  final db = Firestore.instance;
+  var overalluserid;
   @override
   Widget build(BuildContext context) {
+    overalluserid = Provider.of<Auth>(
+      context,
+      listen: false,
+    ).userId;
     return new Scaffold(
       resizeToAvoidBottomPadding: false,
       appBar: AppBar(
@@ -38,7 +44,11 @@ class _ShowPageState extends State<ShowPage> {
       body: Container(
         padding: const EdgeInsets.all(20.0),
         child: StreamBuilder<QuerySnapshot>(
-          stream: db.snapshots(),
+          stream: db
+              .collection('Scrapbook')
+              .document(overalluserid)
+              .collection('Movies')
+              .snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
