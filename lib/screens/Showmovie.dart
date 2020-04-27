@@ -80,6 +80,7 @@ class _ShowPageState extends State<ShowPage> {
             comment: doc["comments"],
             free_link: doc["free_link"],
             documentId: doc.documentID,
+            userid: overalluserid,
           ),
         )
         .toList();
@@ -94,7 +95,8 @@ class CustomCard extends StatefulWidget {
       this.rating,
       this.comment,
       this.free_link,
-      this.documentId});
+      this.documentId,
+      this.userid});
 
   String movie_name;
   List<Object> genres;
@@ -103,16 +105,19 @@ class CustomCard extends StatefulWidget {
   String comment;
   String free_link;
   String documentId;
+  var userid;
 
   @override
   _CustomCardState createState() => _CustomCardState(
-      movie_name: movie_name,
-      genres: genres,
-      famous_casts: famous_casts,
-      rating: rating,
-      comment: comment,
-      free_link: free_link,
-      documentId: documentId);
+        movie_name: movie_name,
+        genres: genres,
+        famous_casts: famous_casts,
+        rating: rating,
+        comment: comment,
+        free_link: free_link,
+        documentId: documentId,
+        userid: userid,
+      );
 }
 
 class _CustomCardState extends State<CustomCard> {
@@ -123,7 +128,8 @@ class _CustomCardState extends State<CustomCard> {
       this.rating,
       this.comment,
       this.free_link,
-      this.documentId});
+      this.documentId,
+      this.userid});
 
   String movie_name;
   List<Object> genres;
@@ -136,7 +142,7 @@ class _CustomCardState extends State<CustomCard> {
   List<String> famous_cast_string = new List<String>();
   String Genre;
   String Famous_cast;
-
+  var userid;
   void convert() {
     genres.forEach((item) {
       genre_strings.add(item.toString());
@@ -373,7 +379,7 @@ class _CustomCardState extends State<CustomCard> {
                         return AlertDialog(
                           title: Text(
                             "Are you sure to Edit?",
-                            style: Theme.of(context).textTheme.subtitle,
+                            style: Theme.of(context).textTheme.bodyText1,
                           ),
                           actions: <Widget>[
                             // usually buttons at the bottom of the dialog
@@ -428,7 +434,7 @@ class _CustomCardState extends State<CustomCard> {
                         return AlertDialog(
                           title: new Text(
                             "Are you sure to delete?",
-                            style: Theme.of(context).textTheme.subtitle,
+                            style: Theme.of(context).textTheme.bodyText1,
                           ),
                           actions: <Widget>[
                             // usually buttons at the bottom of the dialog
@@ -442,6 +448,8 @@ class _CustomCardState extends State<CustomCard> {
                               child: new Text("Yes"),
                               onPressed: () {
                                 Firestore.instance
+                                    .collection('Scrapbook')
+                                    .document(userid)
                                     .collection('Movies')
                                     .document(documentId)
                                     .delete();
